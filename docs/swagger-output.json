@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Job Board API",
-    "description": "API documentation for the Job Board application",
+    "title": "Booking System API",
+    "description": "API documentation for the Booking System application",
     "version": "1.0.0"
   },
   "host": "localhost:8000",
