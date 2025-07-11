@@ -103,7 +103,7 @@ app/
 git clone <repo-url>
 cd backend
 npm install
-npm run dev
+npm run local
 ```
 
 ---
