@@ -1,73 +1,99 @@
-# 📘 Frontend - Appointment Booking System
+# 📘 Backend - Appointment Booking System
 
-A user-friendly React-based frontend for an appointment booking system tailored for clinics, salons, and coworking spaces. Built with modern tools and libraries to ensure performance, scalability, and a seamless user experience.
+A robust Node.js backend for handling authentication, appointment scheduling, and holiday management for service-based businesses like clinics, salons, or coworking spaces.
 
 ---
 
 ## 🚀 Tech Stack
 
-* **React** (with Vite)
+* **Node.js** with **Express.js**
 * **TypeScript**
-* **Redux Toolkit** with **RTK Query**
-* **React Router** for navigation
-* **Material UI** + **Tailwind CSS** for design
-* **React Hook Form** + **Zod** for form validation
-* **Day.js** for date/time formatting
+* **MongoDB** with **Mongoose**
+* **Passport.js** for authentication
+* **JWT** based access and refresh tokens
+* **Zod** (or custom validators)
+* **Nodemailer** (Email support)
+* **Docker** and **Docker Compose** (optional)
 
 ---
 
 ## 📂 Folder Structure
 
 ```sh
-src/
-├── assets/                     # Static files
-├── components/                 # Reusable UI components
-│   └── Booking/                # Booking-related components (calendar, form)
-├── layout/                     # Layouts for user/admin
-├── pages/                      # Page-level components
-│   ├── Booking.tsx             # Booking calendar
-│   ├── Profile.tsx             # User profile & booking history
-│   ├── AdminDashboard.tsx      # Admin interface for managing bookings & holidays
+app/
+├── common/
+│   ├── dto/                   # Shared DTOs
+│   ├── helper/                # Utility helpers
+│   └── middleware/            # Global middlewares (auth, error)
 ├── services/
-│   ├── api.ts                  # RTK Query API definitions
-│   └── baseQuery.ts            # Base query with token refresh logic
-├── store/
-│   ├── reducers/               # Redux slices (auth, booking)
-│   └── store.ts                # Root store
-├── App.tsx
-├── main.tsx
+│   ├── email.service.ts       # Email notifications
+│   └── passport-jwt.service.ts# JWT strategy config
+├── user/
+│   ├── user.controller.ts     # User-related logic
+│   ├── user.route.ts          # User routes
+│   ├── user.schema.ts         # User model
+├── booking/
+│   ├── booking.controller.ts  # Booking logic
+│   ├── booking.route.ts       # Booking routes
+│   ├── booking.schema.ts      # Booking model
+├── calendar/
+│   ├── holiday.controller.ts  # Holiday logic
+│   ├── holiday.route.ts       # Holiday routes
+│   ├── holiday.schema.ts      # Holiday model
+├── index.ts                   # Entry point
+├── routes.ts                  # Combined route mount point
 ```
 
 ---
 
 ## 📌 Features
 
-* 🔐 User registration, login, and logout
-* 📅 Real-time appointment booking and rescheduling
-* ❌ Cancel appointments
-* 📤 Token auto-refresh using `baseQuery`
-* 🧑‍⚕️ Admin panel to manage holidays and view bookings
-* 📆 Holiday-aware calendar that disables unavailable dates
-* 🛎️ Notifications via email + toast UI
+* 🔐 User registration, login, logout, and token refresh
+* 📅 Appointment booking with rescheduling and cancelation
+* ❌ Holiday management (admin only)
+* 🧑‍⚕️ Role-based access control (`USER`, `ADMIN`)
+* 📬 Email notifications (e.g., reminders, confirmations)
+* 📃 JWT middleware for protected routes
 
 ---
 
-## 🧭 App Routes
+## 🧭 API Routes Summary
 
-| Path       | Role   | Description                       |
-| ---------- | ------ | --------------------------------- |
-| `/login`   | Public | User/admin login and registration |
-| `/`        | User   | Booking calendar and form         |
-| `/profile` | User   | View personal bookings            |
-| `/admin`   | Admin  | Manage bookings & holidays        |
+### Auth & Users
+
+| Method | Route                  | Role   | Description              |
+| ------ | ---------------------- | ------ | ------------------------ |
+| POST   | `/users/register`      | Public | Register user            |
+| POST   | `/users/login`         | Public | Login and receive tokens |
+| POST   | `/users/logout`        | USER   | Logout user              |
+| POST   | `/users/refresh-token` | Public | Refresh access token     |
+| GET    | `/users/me`            | USER   | Get current user profile |
+
+### Bookings
+
+| Method | Route                 | Role  | Description                 |
+| ------ | --------------------- | ----- | --------------------------- |
+| POST   | `/booking`            | USER  | Create a new booking        |
+| PUT    | `/booking/:id`        | USER  | Reschedule existing booking |
+| PATCH  | `/booking/:id/cancel` | USER  | Cancel a booking            |
+| GET    | `/booking`            | ADMIN | Get all bookings            |
+| GET    | `/booking/:id`        | USER  | Get booking by ID           |
+
+### Holidays (Admin Only)
+
+| Method | Route          | Role  | Description       |
+| ------ | -------------- | ----- | ----------------- |
+| POST   | `/holiday`     | ADMIN | Add a holiday     |
+| DELETE | `/holiday/:id` | ADMIN | Remove a holiday  |
+| GET    | `/holiday`     | Any   | View all holidays |
 
 ---
 
-## 🔌 API Integration (via RTK Query)
+## 🔐 Auth & Role Middleware
 
-* All calls routed through `services/api.ts`
-* Uses `baseQuery.ts` for handling access token expiry and refresh
-* Supports caching, polling, and automated tag invalidation
+* `passport-jwt` for verifying tokens
+* `roleAuth(["USER"])` and `roleAuth(["ADMIN"])` guards
+* `catchError` to wrap async handlers cleanly
 
 ---
 
@@ -75,7 +101,7 @@ src/
 
 ```bash
 git clone <repo-url>
-cd frontend
+cd backend
 npm install
 npm run dev
 ```
@@ -85,7 +111,13 @@ npm run dev
 ## 🔧 .env Example
 
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api
+PORT=8000
+MONGO_URI=mongodb://localhost:27017/appointments
+JWT_SECRET=supersecret
+ACCESS_TOKEN_EXPIRE=15m
+REFRESH_TOKEN_EXPIRE=7d
+EMAIL_USER=you@example.com
+EMAIL_PASS=yourpassword
 ```
 
 ---
