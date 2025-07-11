@@ -3,6 +3,9 @@ import cors from "cors";
 import express, { type Express, type Request, type Response } from "express";
 import http from "http";
 import morgan from "morgan";
+import fs from "fs";
+import path from "path";
+import swaggerUi from "swagger-ui-express";
 
 import { loadConfig } from "./app/common/helper/config.hepler";
 loadConfig();
@@ -12,6 +15,10 @@ import { initDB } from "./app/common/services/database.service";
 import { initPassport } from "./app/common/services/passport-jwt.service";
 import routes from "./app/routes";
 import { type IUser } from "./app/user/user.dto";
+
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, "./docs/swagger-output.json"), "utf8")
+);
 
 declare global {
   namespace Express {
@@ -31,6 +38,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(morgan("dev"));
+
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const initApp = async (): Promise<void> => {
   // init mongodb

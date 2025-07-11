@@ -1,0 +1,1183 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Job Board API",
+    "description": "API documentation for the Job Board application",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8000",
+  "basePath": "/api",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Type: `Bearer <your-token>`"
+    }
+  },
+  "paths":{
+    "/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Register a new user",
+        "description": "Create a new user with name, email, password, role, and confirmPassword",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User registration data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password",
+                "confirmPassword",
+                "name",
+                "role"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "admin75@test.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "admin987"
+                },
+                "confirmPassword": {
+                  "type": "string",
+                  "example": "admin987"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Admin Kumar 2"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["ADMIN", "USER", "CANDIDATE"],
+                  "example": "ADMIN"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User registered successfully"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "80744d2b-c1a0-4351-8915-af4562ed7a1e"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Admin Kumar 2"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin75@test.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "ADMIN"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "example": "invalid_type"
+                      },
+                      "expected": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "received": {
+                        "type": "string",
+                        "example": "undefined"
+                      },
+                      "path": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": ["confirmPassword"]
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login a user",
+        "description": "Authenticate user with email and password",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User login credentials",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "admin75@test.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "admin987"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Login successful"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "tokens": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        }
+                      }
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "80744d2b-c1a0-4351-8915-af4562ed7a1e"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Admin Kumar 2"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "admin75@test.com"
+                        },
+                        "active": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "ADMIN"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "example": "manual"
+                        }
+                      }
+                    },
+                    "walletBalance": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": ["ADMIN", "USER", "CANDIDATE"]
+                          }
+                        }
+                      }
+                    },
+                    "txns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "example": []
+                    },
+                    "pendingDeposits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "example": []
+                    },
+                    "pendingWithdrawals": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "example": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error_code": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid email or password"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/refresh-token": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Refresh access and refresh tokens",
+        "description": "Generate new access and refresh tokens using a valid refresh token",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Refresh token request body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["refreshToken"],
+              "properties": {
+                "refreshToken": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token refresh successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token refreshed successfully"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "tokens": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        }
+                      }
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "9349a390-b9e7-408f-897c-7cd6a06d844d"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "admin@test21.com"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "rahul"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "CANDIDATE"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "example": "manual"
+                        },
+                        "active": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "blocked": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error_code": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Refresh token is invalid or expired"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error_code": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Something went wrong"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking/{id}/cancel": {
+      "patch": {
+        "tags": ["Booking"],
+        "summary": "Cancel a booking",
+        "description": "Cancels an existing booking by ID. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Booking ID to cancel",
+            "schema": {
+              "type": "string",
+              "example": "6870b9a6cf55f1b670a7bf31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking cancelled successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6870b9a6cf55f1b670a7bf31"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "6870b658e6bff7f2e0d2a5ce"
+                        },
+                        "staffId": {
+                          "type": "string",
+                          "example": "6870b8a586efc9f3362744c9"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-07-18"
+                        },
+                        "time": {
+                          "type": "string",
+                          "example": "15:00"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "cancelled"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:13:42.957Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:15:43.938Z"
+                        },
+                        "__v": {
+                          "type": "integer",
+                          "example": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/booking": {
+      "post": {
+        "tags": ["Booking"],
+        "summary": "Create a new booking",
+        "description": "Creates a new booking with user ID, staff ID, date, and time. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "staffId", "date", "time"],
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "6870b658e6bff7f2e0d2a5ce"
+                  },
+                  "staffId": {
+                    "type": "string",
+                    "example": "6870b8a586efc9f3362744c9"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-07-15"
+                  },
+                  "time": {
+                    "type": "string",
+                    "example": "10:30"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6870b9a6cf55f1b670a7bf31"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "6870b658e6bff7f2e0d2a5ce"
+                        },
+                        "staffId": {
+                          "type": "string",
+                          "example": "6870b8a586efc9f3362744c9"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-07-15"
+                        },
+                        "time": {
+                          "type": "string",
+                          "example": "10:30"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "booked"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:13:42.957Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:13:42.957Z"
+                        },
+                        "__v": {
+                          "type": "integer",
+                          "example": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or time/date unavailable"
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/booking/all/{userId}": {
+      "get": {
+        "tags": ["Booking"],
+        "summary": "Get all bookings for a user",
+        "description": "Fetches all booking records associated with a given user ID. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "description": "The ID of the user to fetch bookings for",
+            "schema": {
+              "type": "string",
+              "example": "6870b658e6bff7f2e0d2a5ce"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bookings fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6870b9a6cf55f1b670a7bf31"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "6870b658e6bff7f2e0d2a5ce"
+                          },
+                          "staffId": {
+                            "type": "string",
+                            "example": "6870b8a586efc9f3362744c9"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-07-18"
+                          },
+                          "time": {
+                            "type": "string",
+                            "example": "15:00"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "rescheduled"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T07:13:42.957Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T07:15:00.866Z"
+                          },
+                          "__v": {
+                            "type": "integer",
+                            "example": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "404": {
+            "description": "No bookings found for user"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/booking/{id}": {
+      "put": {
+        "tags": ["Booking"],
+        "summary": "Reschedule a booking",
+        "description": "Updates the date and time of an existing booking. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Booking ID to be updated",
+            "schema": {
+              "type": "string",
+              "example": "6870b9a6cf55f1b670a7bf31"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["date", "time"],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-07-18"
+                  },
+                  "time": {
+                    "type": "string",
+                    "example": "15:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking rescheduled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking rescheduled successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6870b9a6cf55f1b670a7bf31"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "6870b658e6bff7f2e0d2a5ce"
+                        },
+                        "staffId": {
+                          "type": "string",
+                          "example": "6870b8a586efc9f3362744c9"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-07-18"
+                        },
+                        "time": {
+                          "type": "string",
+                          "example": "15:00"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "rescheduled"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:13:42.957Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-07-11T07:15:00.866Z"
+                        },
+                        "__v": {
+                          "type": "integer",
+                          "example": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or unavailable slot"
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/holiday": {
+      "post": {
+        "tags": ["Holiday"],
+        "summary": "Add holidays for a user",
+        "description": "Creates one or more holiday entries for the given user. Requires authentication as ADMIN.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["dates", "userId", "reason"],
+                "properties": {
+                  "dates": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "example": [
+                      "2025-07-05",
+                      "2025-07-01",
+                      "2025-07-10",
+                      "2025-07-15",
+                      "2025-07-20",
+                      "2025-07-25",
+                      "2025-07-30"
+                    ]
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "6870b8a586efc9f3362744c9"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": "Holiday"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Holidays added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Holidays added successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6870e243fbee656efcdefae3"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-07-05"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "6870b8a586efc9f3362744c9"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Holiday"
+                          },
+                          "__v": {
+                            "type": "integer",
+                            "example": 0
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T10:07:00.000Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T10:07:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "403": {
+            "description": "Forbidden - Only ADMIN can access this"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/holiday/{id}": {
+      "delete": {
+        "tags": ["Holiday"],
+        "summary": "Delete a holiday by ID",
+        "description": "Deletes a holiday entry by its ID. Requires authentication as ADMIN.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "The ID of the holiday to delete",
+            "schema": {
+              "type": "string",
+              "example": "6870bc22f821873ad1097b58"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Holiday removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Holiday removed successfully"
+                    },
+                    "data": {
+                      "type": ["object", "null"],
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "403": {
+            "description": "Forbidden - Only ADMIN can perform this action"
+          },
+          "404": {
+            "description": "Holiday not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/holiday/{userId}": {
+      "get": {
+        "tags": ["Holiday"],
+        "summary": "Get all holidays for a user",
+        "description": "Retrieves a list of all holidays created for a specific user. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "description": "User ID to fetch holidays for",
+            "schema": {
+              "type": "string",
+              "example": "6870b8a586efc9f3362744c9"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of holidays fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6870ba97cf55f1b670a7bf46"
+                          },
+                          "dates": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "example": ["2025-07-20"]
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-08-20"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Maintenance"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T07:17:43.982Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-07-11T07:17:43.982Z"
+                          },
+                          "__v": {
+                            "type": "integer",
+                            "example": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "404": {
+            "description": "No holidays found for user"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}
